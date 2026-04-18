@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DerDieDas – endlich klar! 🇩🇪</title>
+  <style>
+    :root {
+      --bg1:#fff7ed;
+      --bg2:#eef2ff;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --accent:#7c3aed;
+      --accent2:#ec4899;
+      --brand:#ff2d55;
+      --ok:#047857;
+      --okbg:#ecfdf5;
+      --bad:#b91c1c;
+      --badbg:#fef2f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .app { width: min(980px, 100%); }
+    .header { text-align: center; margin-bottom: 24px; }
+    .title { font-size: 36px; font-weight: 800; margin: 0 0 10px; letter-spacing: .2px; }
+    .subtitle, .tagline, .credit { display: block; margin: 6px 0; text-align: center; }
+    .subtitle { font-size: 18px; font-weight: 700; }
+    .tagline { font-size: 18px; color: var(--muted); }
+    .credit { font-size: 17px; font-weight: 800; color: var(--brand); }
+    .panel {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.88);
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: 0 16px 40px rgba(31,41,55,.10);
+      backdrop-filter: blur(10px);
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .progress-wrap { flex: 1 1 260px; }
+    .progress-bar {
+      height: 10px;
+      background: #e9eefc;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width .35s ease;
+    }
+    .score {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      color: #374151;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 34px 28px 26px;
+      min-height: 470px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sentence {
+      font-size: 34px;
+      line-height: 1.55;
+      margin: 18px 0 28px;
+      min-height: 120px;
+      text-align: center;
+    }
+    .blank {
+      display: inline-block;
+      min-width: 120px;
+      text-align: center;
+      padding: 4px 10px;
+      border-bottom: 3px solid #c7d2fe;
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 0 auto 22px;
+      width: 100%;
+      max-width: 860px;
+    }
+    .choice {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      border-radius: 16px;
+      padding: 18px 14px;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: transform .08s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .choice:hover {
+      border-color: #c4b5fd;
+      box-shadow: 0 10px 18px rgba(124,58,237,.08);
+      transform: translateY(-1px);
+    }
+    .choice.correct { background: var(--okbg); color: var(--ok); border-color: #a7f3d0; }
+    .choice.wrong { background: var(--badbg); color: var(--bad); border-color: #fecaca; }
+    .feedback {
+      min-height: 58px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px 0;
+    }
+    .feedback.ok { color: var(--ok); font-weight: 800; }
+    .feedback.bad { color: var(--bad); font-weight: 800; }
+    .nav {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    button.navbtn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+    }
+    button.navbtn.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    button.navbtn:disabled { opacity: .5; cursor: not-allowed; }
+    .result {
+      display: none;
+      text-align: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 34px 24px;
+    }
+    .result h2 { font-size: 32px; margin: 0 0 14px; }
+    .bigscore { font-size: 44px; font-weight: 900; margin: 10px 0 16px; color: var(--accent); }
+    .small { color: var(--muted); font-size: 17px; }
+    @media (max-width: 700px) {
+      .title { font-size: 28px; }
+      .subtitle, .tagline { font-size: 16px; }
+      .sentence { font-size: 26px; min-height: 90px; }
+      .choices { grid-template-columns: 1fr; }
+      .card { min-height: 520px; padding: 24px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1 class="title">DerDieDas – endlich klar! 🇩🇪</h1>
+      <span class="subtitle">Deutsch — Artikeltrainer A1</span>
+      <span class="tagline">Vom Chaos zur Klarheit.</span>
+      <span class="credit">designed by @eduproberegova</span>
+    </div>
+
+    <div class="panel">
+      <div id="trainer">
+        <div class="topbar">
+          <div class="progress-wrap">
+            <div id="progressText">Satz 1 von 45</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          </div>
+          <div class="score" id="scoreBox">Punkte: 0 / 45</div>
+        </div>
+
+        <div class="card">
+          <div>
+            <div class="sentence" id="sentenceBox"></div>
+            <div class="choices" id="choicesBox"></div>
+            <div class="feedback" id="feedbackBox"></div>
+          </div>
+          <div class="nav">
+            <button class="navbtn secondary" id="prevBtn">Zurück</button>
+            <button class="navbtn secondary" id="restartBtn">Neu starten</button>
+            <button class="navbtn" id="nextBtn" disabled>Weiter</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="result" id="resultBox">
+        <h2>Fertig!</h2>
+        <div class="bigscore" id="finalScore"></div>
+        <div class="small" id="finalText"></div>
+        <div class="nav" style="justify-content:center; margin-top:24px;">
+          <button class="navbtn" onclick="restartGame()">Noch einmal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const originalCards = [{"sentence": "Ich gehe in ___ Supermarkt.", "answer": "den", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich sehe heute ___ Markt.", "answer": "einen", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich habe heute ___ Preis gesehen.", "answer": "keinen", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich habe ___ Geld.", "answer": "das", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich brauche ___ Euro.", "answer": "einen", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich suche heute ___ Kasse.", "answer": "keine", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich nehme ___ Kassenzettel.", "answer": "den", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich kaufe heute ___ Angebot.", "answer": "ein", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich möchte heute ___ Rabatt.", "answer": "keinen", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich esse ___ Brot.", "answer": "das", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich kaufe heute ___ Käse.", "answer": "einen", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich esse heute ___ Fleisch.", "answer": "kein", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich kaufe ___ Gemüse.", "answer": "das", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich habe heute ___ Obst.", "answer": "ein", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich trinke heute ___ Wasser.", "answer": "kein", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich bestelle ___ Kaffee.", "answer": "den", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich trinke heute ___ Tee.", "answer": "einen", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich besuche heute ___ Stadt.", "answer": "keine", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich sehe ___ Straße.", "answer": "die", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich gehe auf ___ Platz.", "answer": "einen", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich gehe heute in ___ Park.", "answer": "keinen", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich gehe in ___ Geschäft.", "answer": "das", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich gehe heute in ___ Apotheke.", "answer": "eine", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich besuche heute ___ Krankenhaus.", "answer": "kein", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich sehe ___ Schule.", "answer": "die", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich besuche heute ___ Universität.", "answer": "eine", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich gehe heute in ___ Restaurant.", "answer": "kein", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich gehe in ___ Café.", "answer": "das", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich gehe heute in ___ Bank.", "answer": "eine", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich sehe heute ___ Post.", "answer": "keine", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich rufe ___ Polizei.", "answer": "die", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich gehe heute in ___ Kino.", "answer": "ein", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich besuche heute ___ Museum.", "answer": "kein", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich sehe ___ Bahnhof.", "answer": "den", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich warte auf ___ Haltestelle.", "answer": "eine", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich sehe heute ___ Flughafen.", "answer": "keinen", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich habe ___ Zeit.", "answer": "die", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich suche heute ___ Job.", "answer": "einen", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich habe heute ___ Termin.", "answer": "keinen", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich sehe ___ Kind.", "answer": "das", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich sehe heute ___ Strand.", "answer": "einen", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich bestelle heute ___ Rotwein.", "answer": "keinen", "options": ["kein", "keine", "keinem", "keinen"]}, {"sentence": "Ich nehme ___ Weißwein.", "answer": "den", "options": ["der", "die", "das", "den"]}, {"sentence": "Ich esse heute ___ Mittagessen.", "answer": "ein", "options": ["ein", "eine", "einem", "einen"]}, {"sentence": "Ich koche heute ___ Abendessen.", "answer": "kein", "options": ["kein", "keine", "keinem", "keinen"]}];
+    let cards = [];
+    let current = 0;
+    let points = 0;
+    let answers = [];
+
+    const sentenceBox = document.getElementById('sentenceBox');
+    const choicesBox = document.getElementById('choicesBox');
+    const feedbackBox = document.getElementById('feedbackBox');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const progressText = document.getElementById('progressText');
+    const progressFill = document.getElementById('progressFill');
+    const scoreBox = document.getElementById('scoreBox');
+    const trainer = document.getElementById('trainer');
+    const resultBox = document.getElementById('resultBox');
+    const finalScore = document.getElementById('finalScore');
+    const finalText = document.getElementById('finalText');
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function prepareCards() {
+      cards = shuffleArray(originalCards).map(card => {
+        return {
+          sentence: card.sentence,
+          answer: card.answer,
+          options: shuffleArray(card.options)
+        };
+      });
+      current = 0;
+      points = 0;
+      answers = new Array(cards.length).fill(null);
+    }
+
+    function renderCard() {
+      const card = cards[current];
+      progressText.textContent = `Satz ${current + 1} von ${cards.length}`;
+      progressFill.style.width = `${((current + 1) / cards.length) * 100}%`;
+      scoreBox.textContent = `Punkte: ${points} / ${cards.length}`;
+
+      const chosen = answers[current];
+      const shownValue = chosen ? chosen.selected : "___";
+      sentenceBox.innerHTML = card.sentence.replace("___", `<span class="blank">${shownValue}</span>`);
+
+      feedbackBox.className = "feedback";
+      feedbackBox.textContent = "";
+      choicesBox.innerHTML = "";
+
+      card.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice";
+        btn.textContent = option;
+        btn.disabled = !!chosen;
+
+        if (chosen) {
+          if (option === card.answer) btn.classList.add("correct");
+          if (option === chosen.selected && chosen.selected !== card.answer) btn.classList.add("wrong");
+        }
+
+        btn.addEventListener("click", () => selectAnswer(option));
+        choicesBox.appendChild(btn);
+      });
+
+      if (chosen) {
+        if (chosen.correct) {
+          feedbackBox.classList.add("ok");
+          feedbackBox.textContent = "Richtig!";
+        } else {
+          feedbackBox.classList.add("bad");
+          feedbackBox.textContent = `Leider falsch. Richtig ist: ${card.answer}`;
+        }
+      }
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = !chosen;
+      nextBtn.textContent = current === cards.length - 1 ? "Ergebnis" : "Weiter";
+    }
+
+    function selectAnswer(option) {
+      const card = cards[current];
+      if (answers[current]) return;
+      const correct = option === card.answer;
+      answers[current] = { selected: option, correct: correct };
+      if (correct) points += 1;
+      renderCard();
+    }
+
+    function goNext() {
+      if (!answers[current]) return;
+      if (current < cards.length - 1) {
+        current += 1;
+        renderCard();
+      } else {
+        showResult();
+      }
+    }
+
+    function goPrev() {
+      if (current > 0) {
+        current -= 1;
+        renderCard();
+      }
+    }
+
+    function showResult() {
+      trainer.style.display = "none";
+      resultBox.style.display = "block";
+      finalScore.textContent = `${points} / ${cards.length}`;
+      let msg = "";
+      if (points === cards.length) msg = "Perfekt! Alle Artikel sitzen.";
+      else if (points >= cards.length * 0.8) msg = "Sehr gut! Du unterscheidest Artikel und Genus schon sicher.";
+      else if (points >= cards.length * 0.6) msg = "Gut gemacht! Noch ein bisschen Übung und es wird klarer.";
+      else msg = "Weiter üben — Artikel und Genus brauchen noch Training.";
+      finalText.textContent = msg;
+    }
+
+    function restartGame() {
+      prepareCards();
+      trainer.style.display = "block";
+      resultBox.style.display = "none";
+      renderCard();
+    }
+
+    nextBtn.addEventListener("click", goNext);
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartGame);
+
+    prepareCards();
+    renderCard();
+  </script>
+</body>
+</html>
